@@ -2,7 +2,6 @@
 A HTML based mini application, written in JavaScript to allow you to host BBC B Disk images on a website.
 
 # What is it?
-# -----------
 Nothing particularly special, but if you have a collection of SSD based DFS disk image files from a BBC Micro (or emulator)
 it allows you to list your image files on your website using nothing more than pure HTML (It doesn't need PHP/C#/NodeJS or anything similar)
 
@@ -16,7 +15,6 @@ Files are download with a name that preserves the BBC file attributes as follows
 <dir> is ommitted if the file is in the root '$' directory.
 
 # How to use it
-# -------------
 There are 2 files 'index.html' and 'disks.json'.
 
 index.html is the main viewing HTML page, drop it in a web accessable folder on your web server, then access it via a browser as you would for any normal web page.  DO BE AWARE though, that it does use Twitter Bootstrap and some modern HTML5 tech such as flexbox to help with the layout and styling, and it does require JavaScript to work too, so it needs a reasonably modern browser circa the last 5 years or so.
