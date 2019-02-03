@@ -10,9 +10,9 @@ single file from inside the image.
 
 Files are download with a name that preserves the BBC file attributes as follows:
 
-<dir>_<name>_<load>_<exec>
+    <dir>_<name>_<load>_<exec>
 
-<dir> is ommitted if the file is in the root '$' directory.
+`<dir>` is ommitted if the file is in the root '$' directory.
 
 # How to use it
 There are 2 files 'index.html' and 'disks.json'.
