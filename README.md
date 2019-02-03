@@ -36,3 +36,12 @@ once you've listed your disks in 'disks.json', place the file in the same folder
 When done, point your browser at the server you placed it on, and you should be able to see your disks and thier contents listed.
 
 The code in this repository is ready to go, and set up to host the disk images of my software published on 8BS.COM.
+
+# Bonus Stuff
+You'll also find a zip file called "phpdfs.zip", in this zip you'll find some not quite complete PHP server scripts that perform the same function as the HTML viewer, but instead require a PHP enable server to use, I wrote these quite a long time ago, so I don't even know if they work or not anymore, use them at your own risk.
+
+# Help?
+As with much of the stuff like this, I really don't have any time to support it, what you see is what you get and I assume a reasonable level of technical competence by anyone playing with any of this stuff.
+
+That said, you can generally get an answer from me as "@shawty_ds" on Twitter, or as "shawty.d.ds@googlemail.com" on GMail if your totally and hoplesly stuck.
+
