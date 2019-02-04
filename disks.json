@@ -1,7 +1,7 @@
 [
-  { "name": "tbi55-1.ssd", "diskTitle": "Dreamscape Demo", "diskType": "Single Sided" },
-  { "name": "tbi55-2.ssd", "diskTitle": "Music Tracker", "diskType": "Single Sided" },
-  { "name": "tbi55-4.ssd", "diskTitle": "BBC 3D Graphics Kit", "diskType": "Single Sided" },
-  { "name": "tbi55-5.ssd", "diskTitle": "Master 128 Windowing Font", "diskType": "Single Sided" },
-  { "name": "tbi55-6.ssd", "diskTitle": "Misc Disk 1", "diskType": "Single Sided" }
+  { "name": "disks/tbi55-1.ssd", "diskTitle": "Dreamscape Demo", "diskType": "Single Sided" },
+  { "name": "disks/tbi55-2.ssd", "diskTitle": "Music Tracker", "diskType": "Single Sided" },
+  { "name": "disks/tbi55-4.ssd", "diskTitle": "BBC 3D Graphics Kit", "diskType": "Single Sided" },
+  { "name": "disks/tbi55-5.ssd", "diskTitle": "Master 128 Windowing Font", "diskType": "Single Sided" },
+  { "name": "disks/tbi55-6.ssd", "diskTitle": "Misc Disk 1", "diskType": "Single Sided" }
 ]
