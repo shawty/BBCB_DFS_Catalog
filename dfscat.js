@@ -5,6 +5,7 @@ var diskWrites = 0;
 var catalogEntryCount = 0;
 var sectorCount = 0;
 var bootOptions = 0;
+var gFileId = String("0");
 
 function hideElement(element)
 {
@@ -169,12 +170,12 @@ function displayDiskCatalog()
       ((fileItem.fileLocked === true) ? "L" : "") +
       "</td><td>" +
       '<button type="button" class="btn btn-success btn-xs" onclick="downloadSingleFile(\'' + catCount + '\')">Download</button>' +
+      "</td><td>" +
+      '<button id="bdis'+catCount+'" type="button" class="btn btn-default btn-xs" onclick="displaySingleFile(\'' + catCount + '\')">Display</button>' +
       "</td></tr>";
 
     $('#fileTable tbody').append(newTableLine);
-
   }
-
 }
 
 function goBackToAvailableDisks()
@@ -295,3 +296,275 @@ function downloadBinaryData(fileName, fileData)
     },
     2000);
 }
+
+function setDispBtn(num)
+{
+  $('#bdis'+num).removeClass('btn-default');
+  $('#bdis'+num).addClass('btn-primary');
+}
+
+function resetDispBtn(num)
+{
+  $('#bdis'+num).removeClass('btn-primary');
+  $('#bdis'+num).addClass('btn-default');
+}
+
+function displaySingleFile(catalogIndex)
+{
+  var oldfileid=gFileId;
+  gFileId=catalogIndex;
+  resetDispBtn(oldfileid);
+  setDispBtn(catalogIndex);
+  $('#fn').text(catalog[catalogIndex]['fileName']);
+  d_text(catalogIndex);
+  d_basic(catalogIndex);
+  d_hex(catalogIndex);
+  d_dis(catalogIndex);
+}
+
+function d_text(catalogIndex)
+{
+  var fileItem = catalog[catalogIndex];
+
+  var startOffset = fileItem.startSector * 256; // DFS Disks have 256 bytes per sector
+  var fileData = new Uint8Array(binaryDiskBlob, startOffset, fileItem.fileLength);
+  var text = new String;
+
+  for ( var i=0; i<=fileItem.fileLength; i++) {
+    if ( fileData[i] < 31 || fileData[i] > 127 ) {
+      if (fileData[i]==13) {
+        text+="\n";
+      } else {
+        text += '[' + String("00" + fileData[i].toString(16)).slice(-2)+']';
+      }
+    } else {
+      text+=String.fromCharCode(fileData[i]);
+    }
+  }
+  $('#contentstxt').text(text);
+}
+
+function d_hex(catalogIndex)
+{
+
+  var fileItem = catalog[catalogIndex];
+
+  var startOffset = fileItem.startSector * 256; // DFS Disks have 256 bytes per sector
+  var fileData = new Uint8Array(binaryDiskBlob, startOffset, fileItem.fileLength);
+
+  var c = new String;
+  var d = new String;
+  var e = new String;
+  var hexd = new String;
+
+  var k = 0;
+  for ( var i=0; i<=fileItem.fileLength; i+=16) {
+    c=String("00000"+i.toString(16)).slice(-5);
+    d = "";
+    e = "";
+    for ( var j=0; j<16; j++ ) {
+      k=i+j;
+      if ( k < fileItem.fileLength ) {
+        d += String("00" + fileData[k].toString(16)).slice(-2);
+        if ( j % 2 == 1 ) {
+          d += " ";
+        }
+        if ( fileData[k] > 31 && fileData[k] < 127 ) {
+          e += String.fromCharCode(fileData[k]);
+        } else {
+          e += '.';
+        }
+      } else {
+        d+="  ";
+        if ( j % 2 == 1 ) {
+          d += " ";
+        }
+      }
+    }
+    hexd+=c+" "+d+" "+e+"\n";
+    //$('#contents').append(c+" "+d+" "+e+"\n");
+  }
+  $('#contentshex').text(hexd);
+}
+
+function d_basic(catalogIndex)
+{
+
+  var fileItem = catalog[catalogIndex];
+
+  var startOffset = fileItem.startSector * 256; // DFS Disks have 256 bytes per sector
+  var fileData = new Uint8Array(binaryDiskBlob, startOffset, fileItem.fileLength);
+
+  /* Thanks to https://www.sweharris.org for letting me convert the code in
+  *  list.pl part of his MMB_Utils https://github.com/sweharris/MMB_Utils
+  *  to javascript and relicense it for use in this code.
+  */
+
+  var c = new String;
+  var d = new String;
+  var e = new String;
+  var line = 0;
+  var llen = 0;
+  var raw = 0;
+  var decode = new String;
+  var prevchar = new String;
+  var listing = new String;
+  var lend = 0;
+  var lno;
+  var n1=0;
+  var n2=0;
+  var n3=0;
+  var low=0;
+  var high=0;
+  var tokens = new Array();
+  tokens[128] = 'AND';     tokens[192] = 'LEFT$(';
+  tokens[129] = 'DIV';     tokens[193] = 'MID$(';
+  tokens[130] = 'EOR';     tokens[194] = 'RIGHT$(';
+  tokens[131] = 'MOD';     tokens[195] = 'STR$';
+  tokens[132] = 'OR';      tokens[196] = 'STRING$(';
+  tokens[133] = 'ERROR';   tokens[197] = 'EOF';
+  tokens[134] = 'LINE';    tokens[198] = 'AUTO';
+  tokens[135] = 'OFF';     tokens[199] = 'DELETE';
+  tokens[136] = 'STEP';    tokens[200] = 'LOAD';
+  tokens[137] = 'SPC';     tokens[201] = 'LIST';
+  tokens[138] = 'TAB(';    tokens[202] = 'NEW';
+  tokens[139] = 'ELSE';    tokens[203] = 'OLD';
+  tokens[140] = 'THEN';    tokens[204] = 'RENUMBER';
+  tokens[142] = 'OPENIN';  tokens[205] = 'SAVE';
+  tokens[143] = 'PTR';     tokens[207] = 'PTR';
+  tokens[144] = 'PAGE';    tokens[208] = 'PAGE';
+  tokens[145] = 'TIME';    tokens[209] = 'TIME';
+  tokens[146] = 'LOMEM';   tokens[210] = 'LOMEM';
+  tokens[147] = 'HIMEM';   tokens[211] = 'HIMEM';
+  tokens[148] = 'ABS';     tokens[212] = 'SOUND';
+  tokens[149] = 'ACS';     tokens[213] = 'BPUT';
+  tokens[150] = 'ADVAL';   tokens[214] = 'CALL';
+  tokens[151] = 'ASC';     tokens[215] = 'CHAIN';
+  tokens[152] = 'ASN';     tokens[216] = 'CLEAR';
+  tokens[153] = 'ATN';     tokens[217] = 'CLOSE';
+  tokens[154] = 'BGET';    tokens[218] = 'CLG';
+  tokens[155] = 'COS';     tokens[219] = 'CLS';
+  tokens[156] = 'COUNT';   tokens[220] = 'DATA';
+  tokens[157] = 'DEG';     tokens[221] = 'DEF';
+  tokens[158] = 'ERL';     tokens[222] = 'DIM';
+  tokens[159] = 'ERR';     tokens[223] = 'DRAW';
+  tokens[160] = 'EVAL';    tokens[224] = 'END';
+  tokens[161] = 'EXP';     tokens[225] = 'ENDPROC';
+  tokens[162] = 'EXT';     tokens[226] = 'ENVELOPE';
+  tokens[163] = 'FALSE';   tokens[227] = 'FOR';
+  tokens[164] = 'FN';      tokens[228] = 'GOSUB';
+  tokens[165] = 'GET';     tokens[229] = 'GOTO';
+  tokens[166] = 'INKEY';   tokens[230] = 'GCOL';
+  tokens[167] = 'INSTR(';  tokens[231] = 'IF';
+  tokens[168] = 'INT';     tokens[232] = 'INPUT';
+  tokens[169] = 'LEN';     tokens[233] = 'LET';
+  tokens[170] = 'LN';      tokens[234] = 'LOCAL';
+  tokens[171] = 'LOG';     tokens[235] = 'MODE';
+  tokens[172] = 'NOT';     tokens[236] = 'MOVE';
+  tokens[173] = 'OPENUP';  tokens[237] = 'NEXT';
+  tokens[174] = 'OPENOUT'; tokens[238] = 'ON';
+  tokens[175] = 'PI';      tokens[239] = 'VDU';
+  tokens[176] = 'POINT(';  tokens[240] = 'PLOT';
+  tokens[177] = 'POS';     tokens[241] = 'PRINT';
+  tokens[178] = 'RAD';     tokens[242] = 'PROC';
+  tokens[179] = 'RND';     tokens[243] = 'READ';
+  tokens[180] = 'SGN';     tokens[244] = 'REM';
+  tokens[181] = 'SIN';     tokens[245] = 'REPEAT';
+  tokens[182] = 'SQR';     tokens[246] = 'REPORT';
+  tokens[183] = 'TAN';     tokens[247] = 'RESTORE';
+  tokens[184] = 'TO';      tokens[248] = 'RETURN';
+  tokens[185] = 'TRUE';    tokens[249] = 'RUN';
+  tokens[186] = 'USR';     tokens[250] = 'STOP';
+  tokens[187] = 'VAL';     tokens[251] = 'COLOUR';
+  tokens[188] = 'VPOS';    tokens[252] = 'TRACE';
+  tokens[189] = 'CHR$';    tokens[253] = 'UNTIL';
+  tokens[190] = 'GET$';    tokens[254] = 'WIDTH';
+  tokens[191] = 'INKEY$';  tokens[255] = 'OSCLI';
+
+
+  var i = 0;
+  while ( i < fileItem.fileLength ) {
+    if ( fileData[i] != 13 ) {
+      listing+="Bad Program (expected ^M at start of line).";
+      break;
+    }
+    i++;
+    // Line number high
+    if ( fileData[i] == 255 ) {
+      break;
+    }
+    if ( fileItem.fileLength < i+2 ) {
+      listing+="Bad Program (Line finishes before metadata).";
+      break;
+    }
+    line = fileData[i]*256;
+    i++;
+    // Line number low
+    line = line + fileData[i];
+    i++;
+    // Line length
+    llen = fileData[i]-4;
+    if ( llen < 0 ) {
+      listing+="Bad Program (Line length too short)";
+      break;
+    }
+    raw=0;  // Set to 1 if in quotes
+    decode="";
+    prevchar="";
+    lend=i+llen;
+    if (lend > fileItem.fileLength ) {
+      listing+="Bad Program (Line truncated)";
+      break;
+    }
+    // Read rest of line
+    while ( i++ < lend ) {
+      if (raw == 1) {
+        d = String.fromCharCode(fileData[i]);
+      } else {
+        if (fileData[i] == parseInt("8D",16)) {
+          // Line token
+          i++;
+          n1=fileData[i];
+          i++;
+          n2=fileData[i];
+          i++;
+          n3=fileData[i];
+          // This comes from page 41 of "The BASIC ROM User Guide"
+          n1=(n1*4)&255;
+          low=(n1 & 192) ^ n2;
+          n1=(n1*4)&255;
+          high=n1 ^ n3;
+          lno=high*256+low;
+          d=lno;
+        } else {
+          if ( fileData[i] in tokens ) {
+            d=tokens[fileData[i]];
+          } else {
+            d=String.fromCharCode(fileData[i]);
+          }
+        }
+      }
+      if (String.fromCharCode(fileData[i]) == '"' ) { raw=1-raw; }
+      decode += d;
+    }
+    listing+=String("     "+line).slice(-6)+decode+"\n";
+  }
+  $('#contentsbas').html(listing);
+}
+
+function d_dis(catalogIndex)
+{
+
+  var fileItem = catalog[catalogIndex];
+
+  var startOffset = fileItem.startSector * 256; // DFS Disks have 256 bytes per sector
+  var fileData = new Uint8Array(binaryDiskBlob, startOffset, fileItem.fileLength);
+
+  var c = new String;
+  var d = new String;
+  var e = new String;
+
+  var k = 0;
+  $('#contentsdis').text("Not implemented yet.");
+}
+
