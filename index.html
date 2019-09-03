@@ -98,6 +98,7 @@
         <li><a id="pbas"  data-toggle="pill" href="#bas">Basic</a></li>
         <li><a id="phex" data-toggle="pill" href="#hex">Hex dump</a></li>
         <li><a id="pdis" data-toggle="pill" href="#dis">Disassembly</a></li>
+        <li><a id="pscr" data-toggle="pill" href="#scr">Screen dump</a></li>
       </ul>
   
       <div class="tab-content">
@@ -112,6 +113,15 @@
         </div>
         <div id="dis" class="tab-pane fade">
           <pre id="contentsdis"> </pre>
+        </div>
+        <div id="scr" class="tab-pane fade">
+          <pre id="contentsscr">
+            <div><canvas class="canvas" id="beebScreen0" width="640" height="512"></canvas></div>
+            <div><canvas class="canvas" id="beebScreen1" width="640" height="512"></canvas></div>
+            <div><canvas class="canvas" id="beebScreen2" width="640" height="512"></canvas></div>
+            <div><canvas class="canvas" id="beebScreen4" width="640" height="512"></canvas></div>
+            <div><canvas class="canvas" id="beebScreen5" width="640" height="512"></canvas></div>
+          </pre>
         </div>
       </div>
 

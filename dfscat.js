@@ -258,8 +258,6 @@ function decimalToHex(d, padding)
 
 function downloadSingleFile(catalogIndex)
 {
-  console.log(catalog[catalogIndex]);
-
   var fileItem = catalog[catalogIndex];
 
   var startOffset = fileItem.startSector * 256; // DFS Disks have 256 bytes per sector
@@ -320,11 +318,12 @@ function displaySingleFile(catalogIndex)
   d=d_dis(catalogIndex);
   t=d_text(catalogIndex);
   b=d_basic(catalogIndex);
+  s=d_scr(catalogIndex);
   d_hex(catalogIndex);
-console.log("Disassembly "+d+" Basic: "+b+" Text "+t);
+
   if (b) {
     $("#pbas").click();
-console.log("b is true");
+
   } else if (t) {
     $("#ptxt").click();
   } else if (d) {
@@ -853,7 +852,7 @@ function d_dis(catalogIndex)
     l="";
   }
   $('#contentsdis').html(text);
-  console.log( "" + (fileItem.fileExec - fileItem.fileLoad ) +"  "+fileData[ fileItem.fileExec - fileItem.fileLoad ] );
+
   if  (fileItem.fileExec == 0 || fileItem.fileExec < fileItem.fileLoad || fileItem.fileExec > fileItem.fileLoad + fileItem.fileLength || !( fileData[ fileItem.fileExec - fileItem.fileLoad ] in ops) || fileData[ fileItem.fileExec - fileItem.fileLoad ] == 0 ) {
     return false;
   } else {
@@ -861,3 +860,172 @@ function d_dis(catalogIndex)
   }
 }
 
+// Globals for screen display
+var modeTable = {
+  // Note: the colours entry maps to the hash entry in the palettes table
+  // NOTE2: MODE7 is Not decoded by this script, only graphics modes.
+  0: { width: 640, height: 256, colors: 2, charsX: 80, charsY: 32, bits: 1 },
+  1: { width: 320, height: 256, colors: 4, charsX: 40, charsY: 32, bits: 2 },
+  2: { width: 160, height: 256, colors: 16, charsX: 20, charsY: 32, bits: 4 },
+  4: { width: 320, height: 256, colors: 2, charsX: 40, charsY: 32, bits: 1 },
+  5: { width: 160, height: 256, colors: 4, charsX: 20, charsY: 32, bits: 2 },
+};
+
+var colorPalettes = { // Arrays are RGBA format
+  2: [
+    [ 0, 0, 0, 255 ],      // 0 = Black
+    [ 255, 255, 255, 255 ] // 1 = White
+  ],
+  4: [
+    [ 0, 0, 0, 255 ],      // 0 = Black
+    [ 255, 0, 0, 255 ],    // 1 = Red
+    [ 255, 255, 0, 255 ],  // 2 = Yellow
+    [ 255, 255, 255, 255 ] // 3 = White
+  ],
+  16: [
+    [ 0, 0, 0, 255 ],       // 0 = Black
+    [ 255, 0, 0, 255 ],     // 1 = Red
+    [ 0, 255, 0, 255 ],     // 2 = Green
+    [ 255, 255, 0, 255 ],   // 3 = Yellow
+    [ 0, 0, 255, 255 ],     // 4 = Blue
+    [ 255, 0, 255, 255 ],   // 5 = Magenta
+    [ 0, 255, 255, 255 ],   // 6 = Cyan
+    [ 255, 255, 255, 255 ], // 7 = White
+
+    // Can't support flashing colours in a 24bpp pixel map, so we just repeat the first 16 colours
+    [ 0, 0, 0, 255 ],       // 0 = Black
+    [ 255, 0, 0, 255 ],     // 1 = Red
+    [ 0, 255, 0, 255 ],     // 2 = Green
+    [ 255, 255, 0, 255 ],   // 3 = Yellow
+    [ 0, 0, 255, 255 ],     // 4 = Blue
+    [ 255, 0, 255, 255 ],   // 5 = Magenta
+    [ 0, 255, 255, 255 ],   // 6 = Cyan
+    [ 255, 255, 255, 255 ], // 7 = White
+  ]
+}
+
+function decodeOneBitByte(blockData, blockIndex, modeInfo)
+{
+  var result = 
+    colorPalettes[modeInfo.colors][(blockData[blockIndex] & 0x80) >> 7]
+    .concat(colorPalettes[modeInfo.colors][(blockData[blockIndex] & 0x40) >> 6])
+    .concat(colorPalettes[modeInfo.colors][(blockData[blockIndex] & 0x20) >> 5])
+    .concat(colorPalettes[modeInfo.colors][(blockData[blockIndex] & 0x10) >> 4])
+    .concat(colorPalettes[modeInfo.colors][(blockData[blockIndex] & 0x08) >> 3])
+    .concat(colorPalettes[modeInfo.colors][(blockData[blockIndex] & 0x04) >> 2])
+    .concat(colorPalettes[modeInfo.colors][(blockData[blockIndex] & 0x02) >> 1])
+    .concat(colorPalettes[modeInfo.colors][(blockData[blockIndex] & 0x01)]);
+  return result;
+}
+
+function decodeTwoBitByte(blockData, blockIndex, modeInfo)
+{
+  var bottomNibble = blockData[blockIndex] & 0x0F;
+  var topNibble = (blockData[blockIndex] & 0xF0) >> 4;
+
+  var pix1 = ((topNibble & 0x01) << 1) + (bottomNibble & 0x01);
+  var pix2 = (topNibble & 0x02) + ((bottomNibble & 0x02) >> 1);
+  var pix3 = ((topNibble & 0x04) >> 1) + ((bottomNibble & 0x04) >> 2);
+  var pix4 = ((topNibble & 0x08) >> 2) + ((bottomNibble & 0x08) >> 3);
+
+  var result = 
+    colorPalettes[modeInfo.colors][pix4]
+    .concat(colorPalettes[modeInfo.colors][pix3])
+    .concat(colorPalettes[modeInfo.colors][pix2])
+    .concat(colorPalettes[modeInfo.colors][pix1])
+  return result;
+}
+
+function decodeFourBitByte(blockData, blockIndex, modeInfo)
+{
+  var bottomFirstHalfNibble = (blockData[blockIndex] & 0x0C) >> 2;
+  var bottomSecondHalfNibble = blockData[blockIndex] & 0x03;
+
+  var topFirstHalfNibble = (blockData[blockIndex] & 0xC0) >> 6;
+  var topSecondHalfNibble = (blockData[blockIndex] & 0x30) >> 4;
+
+  var pix1 = ((topFirstHalfNibble & 0x02) + ((topSecondHalfNibble & 0x02) >> 1) << 2) + (bottomFirstHalfNibble & 0x02) + ((bottomSecondHalfNibble & 0x02) >> 1);
+  var pix2 = ((((topFirstHalfNibble & 0x01) << 1) + (topSecondHalfNibble & 0x01)) << 2) + (((bottomFirstHalfNibble & 0x01) << 1) + (bottomSecondHalfNibble & 0x01));
+
+  var result = 
+    colorPalettes[modeInfo.colors][pix1]
+    .concat(colorPalettes[modeInfo.colors][pix2])
+  return result;
+}
+
+function unpackOneBitColor(packedInputData, screenMode, length)
+{
+  var modeInfo = modeTable[screenMode];
+  var buffer = new Uint8ClampedArray(modeInfo.height*modeInfo.width*4);
+  var lineWidth = modeInfo.width;
+
+  // Check length for input array, and height*width for output array
+  for (var i=0; i<length && i<modeInfo.height*modeInfo.width/8; i+=8) {
+    // Deal with 1 char at a time - 8x8 pixels
+    // Each byte has 8 pixels going down the screen.
+    var charBytes = packedInputData.slice(i,i+8)
+
+    // 8 rows of pixels dealt with at a time.
+    var lineNo=Math.trunc(i/lineWidth);
+    var linePos=i-(lineWidth*lineNo);
+    // 8 lines are done at a time
+    // 4 bytes per pixel 
+    // but i is incremented by 8, so reflected in linePos.
+    var destinationOffset = lineNo*8*lineWidth*4+linePos*4;
+    //console.log("I: "+i+"  Dest: "+destinationOffset);
+    var row1 = decodeOneBitByte(charBytes, 0, modeInfo);
+    var row2 = decodeOneBitByte(charBytes, 1, modeInfo);
+    var row3 = decodeOneBitByte(charBytes, 2, modeInfo);
+    var row4 = decodeOneBitByte(charBytes, 3, modeInfo);
+    var row5 = decodeOneBitByte(charBytes, 4, modeInfo);
+    var row6 = decodeOneBitByte(charBytes, 5, modeInfo);
+    var row7 = decodeOneBitByte(charBytes, 6, modeInfo);
+    var row8 = decodeOneBitByte(charBytes, 7, modeInfo);
+
+    buffer.set(row1, (lineWidth * 4 * 0) + destinationOffset);
+    buffer.set(row2, (lineWidth * 4 * 1) + destinationOffset);
+    buffer.set(row3, (lineWidth * 4 * 2) + destinationOffset);
+    buffer.set(row4, (lineWidth * 4 * 3) + destinationOffset);
+    buffer.set(row5, (lineWidth * 4 * 4) + destinationOffset);
+    buffer.set(row6, (lineWidth * 4 * 5) + destinationOffset);
+    buffer.set(row7, (lineWidth * 4 * 6) + destinationOffset);
+    buffer.set(row8, (lineWidth * 4 * 7) + destinationOffset);
+  }
+  return buffer;
+}
+
+
+function d_scr(catalogIndex)
+{
+  var fileItem = catalog[catalogIndex];
+  var startOffset = fileItem.startSector * 256; // DFS Disks have 256 bytes per sector
+  var fileData = new Uint8Array(binaryDiskBlob, startOffset, fileItem.fileLength);
+  var canvas, ctx;
+
+  for (mode in modeTable) {
+    console.log(JSON.stringify(mode));
+    buffer = "";
+    switch (modeTable[mode].bits)
+    {
+      case 1:
+        console.log("Mode: "+mode);
+        buffer = unpackOneBitColor(fileData, mode, fileItem.fileLength);
+        break;
+//      case 2:
+//        unpackTwoBitColor(fileData, mode);
+//        break;
+//      case 4:
+//        unpackFourBitColor(fileData, mode);
+//        break;
+    }
+    canvas = document.getElementById('beebScreen'+mode);
+    ctx = canvas.getContext("2d");
+    canvas.width = modeTable[mode].width;
+    canvas.height = modeTable[mode].height;
+    canvas.style.width = "640px";
+    canvas.style.height = "512px";
+    var idata = ctx.createImageData(modeTable[mode].width, modeTable[mode].height);
+    idata.data.set(buffer.slice(0,4*modeTable[mode].width*modeTable[mode].height));
+    ctx.putImageData(idata, 0, 0);
+  }
+}
