@@ -6,6 +6,12 @@ var catalogEntryCount = 0;
 var sectorCount = 0;
 var bootOptions = 0;
 var gFileId = String("0");
+var bootOptTab = {
+  0: "0: *None",
+  1: "1: *Load $.!BOOT",
+  2: "2: *Run $.!BOOT",
+  3: "3: *Exec $.!BOOT"
+}
 
 function hideElement(element)
 {
@@ -149,7 +155,7 @@ function displayDiskCatalog()
   var tracks = (sectorCount > 400) ? 80 : 40;
   $('#diskSize').html(sizeInKb + "K (" + tracks + " track)");
 
-  $('#bootOption').html(bootOptions);
+  $('#bootOption').html(bootOptTab[bootOptions]);
 
   $('#fileTable tbody').empty();
   for (var catCount = 0; catCount < catalogEntryCount; catCount++)
@@ -994,6 +1000,44 @@ function unpackOneBitColor(packedInputData, screenMode, length)
   return buffer;
 }
 
+function unpackTwoBitColor(packedInputData, screenMode, length)
+{
+  var modeInfo = modeTable[screenMode];
+  var buffer = new Uint8ClampedArray(modeInfo.height*modeInfo.width*4);
+  var lineWidth = modeInfo.width;
+
+  for(var i = 0; i < length && i<modeInfo.height*modeInfo.width/(8/modeInfo.bits); i+=8 )
+  {
+    var charBytes = packedInputData.slice(i, i+8);
+    // 8 rows of pixels dealt with at a time.
+    var lineNo=Math.trunc(i/(2*lineWidth));
+    var linePos=i-(lineWidth*lineNo*2);
+    // 8 bytes cover 4 columns
+    // 4 bytes per pixel 
+    // but i is incremented by 8, so reflected in linePos.
+    var destinationOffset = lineNo*8*lineWidth*4+linePos*4/2;
+    //console.log("I: "+i+"  Dest: "+destinationOffset);
+
+    var row1 = decodeTwoBitByte(charBytes, 0, modeInfo);
+    var row2 = decodeTwoBitByte(charBytes, 1, modeInfo);
+    var row3 = decodeTwoBitByte(charBytes, 2, modeInfo);
+    var row4 = decodeTwoBitByte(charBytes, 3, modeInfo);
+    var row5 = decodeTwoBitByte(charBytes, 4, modeInfo);
+    var row6 = decodeTwoBitByte(charBytes, 5, modeInfo);
+    var row7 = decodeTwoBitByte(charBytes, 6, modeInfo);
+    var row8 = decodeTwoBitByte(charBytes, 7, modeInfo);
+      
+    buffer.set(row1, (lineWidth * 4 * 0) + destinationOffset);
+    buffer.set(row2, (lineWidth * 4 * 1) + destinationOffset);
+    buffer.set(row3, (lineWidth * 4 * 2) + destinationOffset);
+    buffer.set(row4, (lineWidth * 4 * 3) + destinationOffset);
+    buffer.set(row5, (lineWidth * 4 * 4) + destinationOffset);
+    buffer.set(row6, (lineWidth * 4 * 5) + destinationOffset);
+    buffer.set(row7, (lineWidth * 4 * 6) + destinationOffset);
+    buffer.set(row8, (lineWidth * 4 * 7) + destinationOffset);
+  }
+  return buffer;
+}
 
 function d_scr(catalogIndex)
 {
@@ -1008,12 +1052,12 @@ function d_scr(catalogIndex)
     switch (modeTable[mode].bits)
     {
       case 1:
-        console.log("Mode: "+mode);
         buffer = unpackOneBitColor(fileData, mode, fileItem.fileLength);
         break;
-//      case 2:
-//        unpackTwoBitColor(fileData, mode);
-//        break;
+      case 2:
+        console.log('Mode: '+mode);
+        buffer = unpackTwoBitColor(fileData, mode, fileItem.fileLength);
+        break;
 //      case 4:
 //        unpackFourBitColor(fileData, mode);
 //        break;
