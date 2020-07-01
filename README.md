@@ -1,6 +1,16 @@
 # BBCB_DFS_Catalog
 A HTML based mini application, written in JavaScript to allow you to host BBC B Disk images on a website.
 
+# Brief update as to what is happening with this project...
+
+Thanks to those who continue to report bugs and suggest fixes, but rather than try to patch this version, I've started a re-write of it using Microsoft's new
+Blazor technologies.  As with anything that's not a work project, and I do for fun & adventure, I cannot devote specific amounts of time to it, so it's very much
+a case of being able to do small bits on it among the many projects I have on the go at any given time.
+
+Please do continue to report errors and such like, I will get the new version up and online as soon as I have anything that resembles good/working code :-)
+
+---------------------------------------------------------------------------------------------------
+
 # What is it?
 Nothing particularly special, but if you have a collection of SSD based DFS disk image files from a BBC Micro (or emulator)
 it allows you to list your image files on your website using nothing more than pure HTML (It doesn't need PHP/C#/NodeJS or anything similar)
