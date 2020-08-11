@@ -131,6 +131,7 @@ function checkDiskType()
 	imgsz=(o+256*(k&3))*p;
 	console.log("Image size: "+ binaryDiskBlob.byteLength + "; Sectors*Tracks: "+imgsz);
 	if (dfs) console.log("DFS Disc");
+	///ddd=false;
 	if (ddd) console.log("Double sided disc");
 }
 
@@ -679,8 +680,8 @@ function d_dis(catalogIndex)
 
   ops[0x00] = ['BRK   ', 5];
   ops[0x01] = ['ORA X,', 7];
-  ops[0x05] = ['ORA (' ,10];
-  ops[0x06] = ['ASL (' ,10];
+  ops[0x05] = ['ORA ' ,10];
+  ops[0x06] = ['ASL ' ,10];
   ops[0x08] = ['PHP '  , 5];
   ops[0x09] = ['ORA '  , 4];
   ops[0x0A] = ['ASL A' , 0];
@@ -698,9 +699,9 @@ function d_dis(catalogIndex)
 
   ops[0x20] = ['JSR '  , 1];
   ops[0x21] = ['AND X,', 7];
-  ops[0x24] = ['BIT (' ,10];
-  ops[0x25] = ['AND (' ,10];
-  ops[0x26] = ['ROL (' ,10];
+  ops[0x24] = ['BIT ' ,10];
+  ops[0x25] = ['AND ' ,10];
+  ops[0x26] = ['ROL ' ,10];
   ops[0x28] = ['PLP '  , 5];
   ops[0x29] = ['AND '  , 4];
   ops[0x2A] = ['ROL A' , 0];
@@ -719,8 +720,8 @@ function d_dis(catalogIndex)
 
   ops[0x40] = ['RTI '  , 5];
   ops[0x41] = ['EOR X,', 7];
-  ops[0x45] = ['EOR (' ,10];
-  ops[0x46] = ['LSR (' ,10];
+  ops[0x45] = ['EOR ' ,10];
+  ops[0x46] = ['LSR ' ,10];
   ops[0x48] = ['PHA '  , 5];
   ops[0x49] = ['EOR #' , 4];
   ops[0x4A] = ['LSR A' , 0];
@@ -739,8 +740,8 @@ function d_dis(catalogIndex)
 
   ops[0x60] = ['RTS '  , 5];
   ops[0x61] = ['ADC X,', 7];
-  ops[0x65] = ['ADC (' ,10];
-  ops[0x66] = ['ROR (' ,10];
+  ops[0x65] = ['ADC ' ,10];
+  ops[0x66] = ['ROR ' ,10];
   ops[0x68] = ['PLA '  , 5];
   ops[0x69] = ['ADC #' , 4];
   ops[0x6A] = ['ROR A' , 0];
@@ -758,9 +759,9 @@ function d_dis(catalogIndex)
   ops[0x7E] = ['ROR '  , 2];
 
   ops[0x81] = ['STA '  , 7];
-  ops[0x84] = ['STY (' ,10];
-  ops[0x85] = ['STA (' ,10];
-  ops[0x86] = ['STX (' ,10];
+  ops[0x84] = ['STY ' ,10];
+  ops[0x85] = ['STA ' ,10];
+  ops[0x86] = ['STX ' ,10];
   ops[0x88] = ['DEY '  , 5];
   ops[0x8A] = ['TXA '  , 5];
   ops[0x8C] = ['STY '  , 1];
@@ -780,11 +781,11 @@ function d_dis(catalogIndex)
   ops[0xA0] = ['LDY #' , 4];
   ops[0xA1] = ['LDA '  , 7];
   ops[0xA2] = ['LDX #' , 4];
-  ops[0xA4] = ['LDY (' ,10];
-  ops[0xA5] = ['LDA (' ,10];
-  ops[0xA6] = ['LDX (' ,10];
+  ops[0xA4] = ['LDY ' ,10];
+  ops[0xA5] = ['LDA ' ,10];
+  ops[0xA6] = ['LDX ' ,10];
   ops[0xA8] = ['TAY '  , 5];
-  ops[0xA9] = ['TAY #' , 4];
+  ops[0xA9] = ['LDA #' , 4];
   ops[0xAA] = ['TAX '  , 5];
   ops[0xAC] = ['LDY '  , 1];
   ops[0xAD] = ['LDA '  , 1];
@@ -804,9 +805,9 @@ function d_dis(catalogIndex)
 
   ops[0xC0] = ['CPY #' , 4];
   ops[0xC1] = ['CMP X,', 7];
-  ops[0xC4] = ['CPY (' ,10];
-  ops[0xC5] = ['CMP (' ,10];
-  ops[0xC6] = ['DEC (' ,10];
+  ops[0xC4] = ['CPY ' ,10];
+  ops[0xC5] = ['CMP ' ,10];
+  ops[0xC6] = ['DEC ' ,10];
   ops[0xC8] = ['INY '  , 5];
   ops[0xC9] = ['CMP #' , 4];
   ops[0xCA] = ['DEX '  , 5];
@@ -825,9 +826,9 @@ function d_dis(catalogIndex)
 
   ops[0xE0] = ['CPX #' , 4];
   ops[0xE1] = ['SBC X,', 7];
-  ops[0xE4] = ['CPX (' ,10];
-  ops[0xE5] = ['SBC (' ,10];
-  ops[0xE6] = ['INC (' ,10];
+  ops[0xE4] = ['CPX ' ,10];
+  ops[0xE5] = ['SBC ' ,10];
+  ops[0xE6] = ['INC ' ,10];
   ops[0xE8] = ['INX '  , 5];
   ops[0xE9] = ['SBC #' , 4];
   ops[0xEA] = ['NOP '  , 5];
@@ -915,7 +916,8 @@ function d_dis(catalogIndex)
           l+=('   '+Number(a)).slice(-3)+'       '+Number(addr+1+xbytes[ins[1]]+a).toString(16);
           break;
         case 10: // Zero page
-          l+='&'+('00'+Number(fileData[i]).toString(16)).slice(-2)+')';
+      //    l+='&'+('00'+Number(fileData[i]).toString(16)).slice(-2)+')';
+          l+='&'+('00'+Number(fileData[i]).toString(16)).slice(-2);
           break;
         case 11: // Zero page X
           l+='&'+('00'+Number(fileData[i]).toString(16)).slice(-2)+',X';
