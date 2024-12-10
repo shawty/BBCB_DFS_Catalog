@@ -678,18 +678,18 @@ function d_dis(catalogIndex)
   var i = 0;
   var j = 0;
 
-  ops[0x00] = ['BRK   ', 5];
-  ops[0x01] = ['ORA X,', 7];
+  ops[0x00] = ['BRK ', 5];
+  ops[0x01] = ['ORA ', 7];
   ops[0x05] = ['ORA ' ,10];
   ops[0x06] = ['ASL ' ,10];
   ops[0x08] = ['PHP '  , 5];
   ops[0x09] = ['ORA '  , 4];
-  ops[0x0A] = ['ASL A' , 0];
+  ops[0x0A] = ['ASL ' , 0];
   ops[0x0D] = ['ORA '  , 1];
   ops[0x0E] = ['ASL '  , 1];
 
   ops[0x10] = ['BPL '  , 9];
-  ops[0x11] = ['ORA (' , 8];
+  ops[0x11] = ['ORA ' , 8];
   ops[0x15] = ['ORA '  ,11];
   ops[0x16] = ['ASL '  ,11];
   ops[0x18] = ['CLC '  , 5];
@@ -698,19 +698,19 @@ function d_dis(catalogIndex)
   ops[0x1E] = ['ORA '  , 1];
 
   ops[0x20] = ['JSR '  , 1];
-  ops[0x21] = ['AND X,', 7];
+  ops[0x21] = ['AND ', 7];
   ops[0x24] = ['BIT ' ,10];
   ops[0x25] = ['AND ' ,10];
   ops[0x26] = ['ROL ' ,10];
   ops[0x28] = ['PLP '  , 5];
   ops[0x29] = ['AND '  , 4];
-  ops[0x2A] = ['ROL A' , 0];
+  ops[0x2A] = ['ROL ' , 0];
   ops[0x2C] = ['BIT '  , 1];
   ops[0x2D] = ['AND '  , 1];
   ops[0x2E] = ['ROL '  , 1];
 
   ops[0x30] = ['BMI '  , 9];
-  ops[0x31] = ['AND (' , 8];
+  ops[0x31] = ['AND ' , 8];
   ops[0x35] = ['AND '  ,11];
   ops[0x36] = ['ROL '  ,11];
   ops[0x38] = ['SEC '  , 5];
@@ -719,18 +719,18 @@ function d_dis(catalogIndex)
   ops[0x3E] = ['ROL '  , 2];
 
   ops[0x40] = ['RTI '  , 5];
-  ops[0x41] = ['EOR X,', 7];
+  ops[0x41] = ['EOR ', 7];
   ops[0x45] = ['EOR ' ,10];
   ops[0x46] = ['LSR ' ,10];
   ops[0x48] = ['PHA '  , 5];
-  ops[0x49] = ['EOR #' , 4];
-  ops[0x4A] = ['LSR A' , 0];
+  ops[0x49] = ['EOR ' , 4];
+  ops[0x4A] = ['LSR ' , 0];
   ops[0x4C] = ['JMP '  , 1];
   ops[0x4D] = ['EOR '  , 1];
   ops[0x4E] = ['LSR '  , 1];
 
   ops[0x50] = ['BVC '  , 9];
-  ops[0x51] = ['EOR (' , 8];
+  ops[0x51] = ['EOR ' , 8];
   ops[0x55] = ['EOR '  ,11];
   ops[0x56] = ['LSR '  ,11];
   ops[0x58] = ['CLI '  , 5];
@@ -739,18 +739,18 @@ function d_dis(catalogIndex)
   ops[0x5E] = ['LSR '  , 2];
 
   ops[0x60] = ['RTS '  , 5];
-  ops[0x61] = ['ADC X,', 7];
+  ops[0x61] = ['ADC ', 7];
   ops[0x65] = ['ADC ' ,10];
   ops[0x66] = ['ROR ' ,10];
   ops[0x68] = ['PLA '  , 5];
-  ops[0x69] = ['ADC #' , 4];
-  ops[0x6A] = ['ROR A' , 0];
-  ops[0x6C] = ['JMP (' , 6];
+  ops[0x69] = ['ADC ' , 4];
+  ops[0x6A] = ['ROR ' , 0];
+  ops[0x6C] = ['JMP ' , 6];
   ops[0x6D] = ['ADC '  , 1];
   ops[0x6E] = ['ROR '  , 1];
 
   ops[0x70] = ['BVS '  , 9];
-  ops[0x71] = ['ADC (' , 8];
+  ops[0x71] = ['ADC ' , 8];
   ops[0x75] = ['ROR '  ,11];
   ops[0x76] = ['ROR '  ,11];
   ops[0x78] = ['SEI '  , 5];
@@ -769,7 +769,7 @@ function d_dis(catalogIndex)
   ops[0x8E] = ['STX '  , 1];
 
   ops[0x90] = ['BCC '  , 9];
-  ops[0x91] = ['STA (' , 8];
+  ops[0x91] = ['STA ' , 8];
   ops[0x94] = ['STY '  ,11];
   ops[0x95] = ['STA '  ,11];
   ops[0x96] = ['STX '  ,12];
@@ -778,21 +778,21 @@ function d_dis(catalogIndex)
   ops[0x9A] = ['TXS '  , 5];
   ops[0x9D] = ['STA '  , 2];
 
-  ops[0xA0] = ['LDY #' , 4];
+  ops[0xA0] = ['LDY ' , 4];
   ops[0xA1] = ['LDA '  , 7];
-  ops[0xA2] = ['LDX #' , 4];
+  ops[0xA2] = ['LDX ' , 4];
   ops[0xA4] = ['LDY ' ,10];
   ops[0xA5] = ['LDA ' ,10];
   ops[0xA6] = ['LDX ' ,10];
   ops[0xA8] = ['TAY '  , 5];
-  ops[0xA9] = ['LDA #' , 4];
+  ops[0xA9] = ['LDA ' , 4];
   ops[0xAA] = ['TAX '  , 5];
   ops[0xAC] = ['LDY '  , 1];
   ops[0xAD] = ['LDA '  , 1];
   ops[0xAE] = ['LDX '  , 1];
 
   ops[0xB0] = ['BCS '  , 9];
-  ops[0xB1] = ['LDA (' , 8];
+  ops[0xB1] = ['LDA ' , 8];
   ops[0xB4] = ['LDY '  ,11];
   ops[0xB5] = ['LDA '  ,11];
   ops[0xB6] = ['LDX '  ,12];
@@ -803,20 +803,20 @@ function d_dis(catalogIndex)
   ops[0xBD] = ['LDA '  , 2];
   ops[0xBE] = ['LDX '  , 3];
 
-  ops[0xC0] = ['CPY #' , 4];
-  ops[0xC1] = ['CMP X,', 7];
+  ops[0xC0] = ['CPY ' , 4];
+  ops[0xC1] = ['CMP ', 7];
   ops[0xC4] = ['CPY ' ,10];
   ops[0xC5] = ['CMP ' ,10];
   ops[0xC6] = ['DEC ' ,10];
   ops[0xC8] = ['INY '  , 5];
-  ops[0xC9] = ['CMP #' , 4];
+  ops[0xC9] = ['CMP ' , 4];
   ops[0xCA] = ['DEX '  , 5];
   ops[0xCC] = ['CPY '  , 1];
   ops[0xCD] = ['CMP '  , 1];
   ops[0xCE] = ['DEC '  , 1];
 
   ops[0xD0] = ['BNE '  , 9];
-  ops[0xD1] = ['CMP (' , 8];
+  ops[0xD1] = ['CMP ' , 8];
   ops[0xD5] = ['CMP '  ,11];
   ops[0xD6] = ['DEC '  ,11];
   ops[0xD8] = ['CLD '  , 5];
@@ -824,13 +824,13 @@ function d_dis(catalogIndex)
   ops[0xDD] = ['CMP '  , 2];
   ops[0xDE] = ['DEC '  , 3];
 
-  ops[0xE0] = ['CPX #' , 4];
-  ops[0xE1] = ['SBC X,', 7];
+  ops[0xE0] = ['CPX ' , 4];
+  ops[0xE1] = ['SBC ', 7];
   ops[0xE4] = ['CPX ' ,10];
   ops[0xE5] = ['SBC ' ,10];
   ops[0xE6] = ['INC ' ,10];
   ops[0xE8] = ['INX '  , 5];
-  ops[0xE9] = ['SBC #' , 4];
+  ops[0xE9] = ['SBC ' , 4];
   ops[0xEA] = ['NOP '  , 5];
   ops[0xEC] = ['CPX '  , 1];
   ops[0xED] = ['SBC '  , 1];
@@ -890,6 +890,8 @@ function d_dis(catalogIndex)
       }
       switch ( ins[1] ) {
         case 0:  // A
+          l=l+'A';
+          break;
         case 5:  // Implied
           // No more arguments needed.
           break;
@@ -903,16 +905,16 @@ function d_dis(catalogIndex)
           l=l+abs(fileData[i],fileData[i+1])+',Y';
           break;
         case 4: // Immediate addressing
-          l+=zpg(fileData[i]);
+          l+='#'+zpg(fileData[i]);
           break;
         case 6: // Indirect
-          l=l+abs(fileData[i],fileData[i+1])+')';
+          l=l+'('+abs(fileData[i],fileData[i+1])+')';
           break;
         case 7: // Indirect X (is always zero page)
-          l=l+zpg(fileData[i]);
+          l=l+'X,'+zpg(fileData[i]);
           break;
         case 8: // Indirect Y (is always zero page)
-          l=l+zpg(fileData[i])+',Y)';
+          l=l+'('+zpg(fileData[i])+',Y)';
           break;
         case 9: // Relative
           a=twoc(fileData[i]);
