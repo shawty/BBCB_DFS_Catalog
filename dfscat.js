@@ -911,10 +911,11 @@ function d_dis(catalogIndex)
           l=l+'('+abs(fileData[i],fileData[i+1])+')';
           break;
         case 7: // Indirect X (is always zero page)
-          l=l+'X,'+zpg(fileData[i]);
+          l=l+'('+zpg(fileData[i])+',X)';
+          // l=l+'X,'+zpg(fileData[i]); // for weird alternative syntax seen on masswerk.at
           break;
         case 8: // Indirect Y (is always zero page)
-          l=l+'('+zpg(fileData[i])+',Y)';
+          l=l+'('+zpg(fileData[i])+'),Y';
           break;
         case 9: // Relative
           a=twoc(fileData[i]);
