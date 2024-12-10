@@ -844,7 +844,7 @@ function d_dis(catalogIndex)
   ops[0xFD] = ['SBC '  , 2];
   ops[0xFE] = ['INC '  , 2];
 
-  xbytes = [0,2,2,2,1,0,2,2,2,1,1,1,1];
+  xbytes = [0,2,2,2,1,0,2,1,1,1,1,1,1];
 /*
  0 A
  1 abs
@@ -878,6 +878,9 @@ function d_dis(catalogIndex)
       function abs(a,b) {
         return '&'+('0000' + Number(a+b*0x100).toString(16)).slice(-4);
       }
+      function zpg(a) {
+        return '&'+('00' + Number(a).toString(16)).slice(-2);
+      }
       function twoc(a) {
         if ( a > 127 ) {
           return a|0xFFFFFF00;
@@ -900,30 +903,29 @@ function d_dis(catalogIndex)
           l=l+abs(fileData[i],fileData[i+1])+',Y';
           break;
         case 4: // Immediate addressing
-          l+='&'+('00'+Number(fileData[i]).toString(16)).slice(-2);
+          l+=zpg(fileData[i]);
           break;
         case 6: // Indirect
           l=l+abs(fileData[i],fileData[i+1])+')';
           break;
-        case 7: // Indirect X
-          l=l+abs(fileData[i],fileData[i+1]);
+        case 7: // Indirect X (is always zero page)
+          l=l+zpg(fileData[i]);
           break;
-        case 8: // Indirect Y
-          l=l+abs(fileData[i],fileData[i+1])+',Y)';
+        case 8: // Indirect Y (is always zero page)
+          l=l+zpg(fileData[i])+',Y)';
           break;
         case 9: // Relative
           a=twoc(fileData[i]);
           l+=('   '+Number(a)).slice(-3)+'       '+Number(addr+1+xbytes[ins[1]]+a).toString(16);
           break;
         case 10: // Zero page
-      //    l+='&'+('00'+Number(fileData[i]).toString(16)).slice(-2)+')';
-          l+='&'+('00'+Number(fileData[i]).toString(16)).slice(-2);
+          l+=zpg(fileData[i]);
           break;
         case 11: // Zero page X
-          l+='&'+('00'+Number(fileData[i]).toString(16)).slice(-2)+',X';
+          l+=zpg(fileData[i])+',X';
           break;
         case 12: // Zero page Y
-          l+='&'+('00'+Number(fileData[i]).toString(16)).slice(-2)+',Y';
+          l+=zpg(fileData[i])+',Y';
           break;
       }
       i+=xbytes[ins[1]];
