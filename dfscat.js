@@ -695,7 +695,7 @@ function d_dis(catalogIndex)
   ops[0x18] = ['CLC '  , 5];
   ops[0x19] = ['ORA '  , 3];
   ops[0x1D] = ['ORA '  , 2];
-  ops[0x1E] = ['ORA '  , 1];
+  ops[0x1E] = ['ASL '  , 2];
 
   ops[0x20] = ['JSR '  , 1];
   ops[0x21] = ['AND ', 7];
@@ -751,7 +751,7 @@ function d_dis(catalogIndex)
 
   ops[0x70] = ['BVS '  , 9];
   ops[0x71] = ['ADC ' , 8];
-  ops[0x75] = ['ROR '  ,11];
+  ops[0x75] = ['ADC '  ,11];
   ops[0x76] = ['ROR '  ,11];
   ops[0x78] = ['SEI '  , 5];
   ops[0x79] = ['ADC '  , 3];
@@ -822,7 +822,7 @@ function d_dis(catalogIndex)
   ops[0xD8] = ['CLD '  , 5];
   ops[0xD9] = ['CMP '  , 3];
   ops[0xDD] = ['CMP '  , 2];
-  ops[0xDE] = ['DEC '  , 3];
+  ops[0xDE] = ['DEC '  , 2];
 
   ops[0xE0] = ['CPX ' , 4];
   ops[0xE1] = ['SBC ', 7];
@@ -837,10 +837,11 @@ function d_dis(catalogIndex)
   ops[0xEE] = ['INC '  , 1];
 
   ops[0xF0] = ['BEQ '  , 9];
-  ops[0xF1] = ['SBC '  , 9];
+  ops[0xF1] = ['SBC '  , 8];
   ops[0xF5] = ['SBC '  ,11];
   ops[0xF6] = ['INC '  ,11];
   ops[0xF8] = ['SED '  , 5];
+  ops[0xF9] = ['SBC '  , 3];
   ops[0xFD] = ['SBC '  , 2];
   ops[0xFE] = ['INC '  , 2];
 
